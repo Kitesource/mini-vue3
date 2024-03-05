@@ -1,5 +1,5 @@
 import { isArray } from '@vue/shared'
-import { ReactiveEffectSets, createEffectSets } from './dep'
+import { Dep, createDep } from './dep'
 
 /**
  * 收集所有依赖的 WeakMap 实例：
@@ -8,7 +8,7 @@ import { ReactiveEffectSets, createEffectSets } from './dep'
  * 		1. `key`：响应性对象的指定属性
  * 		2. `value`：指定对象的指定属性的 执行函数 Set对象
  */
-const targetMap = new WeakMap<any, Map<any, ReactiveEffectSets>>()
+const targetMap = new WeakMap<any, Map<any, Dep>>()
 
 export function track(target: object, key: string | symbol) {
   // 如果当前不存在执行函数，直接return
@@ -21,11 +21,11 @@ export function track(target: object, key: string | symbol) {
   }
   let dep = depsMap.get(key)
   if (!dep) {
-    depsMap.set(key, (dep = createEffectSets()))
+    depsMap.set(key, (dep = createDep()))
   }
   trackEffects(dep)
 }
-function trackEffects(effects: ReactiveEffectSets) {
+function trackEffects(effects: Dep) {
   effects.add(activeEffect!)
 }
 
@@ -36,7 +36,7 @@ export function trigger(target: object, key: string | symbol, value: unknown) {
     return
   }
   // 依据指定的 key，获取 dep 实例
-  let dep: ReactiveEffectSets | undefined = depsMap.get(key)
+  let dep: Dep | undefined = depsMap.get(key)
   // dep 不存在则直接 return
   if (!dep) {
     return
@@ -44,7 +44,7 @@ export function trigger(target: object, key: string | symbol, value: unknown) {
   // 触发 effects
   triggerEffects(dep)
 }
-function triggerEffects(dep: ReactiveEffectSets) {
+function triggerEffects(dep: Dep) {
   const effects = isArray(dep) ? dep : [...dep]
   for (const effect of effects) {
     effect.run()
