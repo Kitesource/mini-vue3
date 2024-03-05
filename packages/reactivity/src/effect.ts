@@ -25,7 +25,7 @@ export function track(target: object, key: string | symbol) {
   }
   trackEffects(dep)
 }
-function trackEffects(effects: Dep) {
+export function trackEffects(effects: Dep) {
   effects.add(activeEffect!)
 }
 
@@ -44,7 +44,7 @@ export function trigger(target: object, key: string | symbol, value: unknown) {
   // 触发 effects
   triggerEffects(dep)
 }
-function triggerEffects(dep: Dep) {
+export function triggerEffects(dep: Dep) {
   const effects = isArray(dep) ? dep : [...dep]
   for (const effect of effects) {
     effect.run()
