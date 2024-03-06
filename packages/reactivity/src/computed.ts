@@ -21,7 +21,14 @@ export class ComputedRefImpl<T> {
   public _dirty = true
 
   constructor(getter) {
-    this.effect = new ReactiveEffect(getter)
+    this.effect = new ReactiveEffect(getter, () => {
+      // 判断当前脏的状态，如果为 false，表示需要《触发依赖》
+      if (!this._dirty) {
+        // 将脏置为 true，表示
+        this._dirty = true
+        triggerRefValue(this)
+      }
+    })
     this.effect.computed = this
   }
 
