@@ -13,6 +13,13 @@ export const isObject = (value: unknown) => {
 }
 
 /**
+ * 判断是否为一个函数
+ */
+export const isFunction = (value: unknown) => {
+  return typeof value === 'function'
+}
+
+/**
  * 对比两个数据是否发生了改变
  */
 export const hasChanged = (value: any, oldValue: any): boolean =>

@@ -1,5 +1,5 @@
 import { hasChanged } from '@vue/shared'
-import { createDep, Dep } from './dep'
+import { Dep, createDep } from './dep'
 import { activeEffect, trackEffects, triggerEffects } from './effect'
 import { toReactive } from './reactive'
 
@@ -7,10 +7,6 @@ export interface Ref<T = any> {
   value: T
 }
 
-/**
- * ref 函数
- * @param value unknown
- */
 export function ref(value?: unknown) {
   return createRef(value, false)
 }
