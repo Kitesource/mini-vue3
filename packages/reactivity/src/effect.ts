@@ -56,8 +56,16 @@ export function trigger(target: object, key: string | symbol, value: unknown) {
 }
 export function triggerEffects(dep: Dep) {
   const effects = isArray(dep) ? dep : [...dep]
+  // 先触发所有的计算属性依赖，再触发所有的非计算属性依赖
   for (const effect of effects) {
-    triggerEffect(effect)
+    if (effect.computed) {
+      triggerEffect(effect)
+    }
+  }
+  for (const effect of effects) {
+    if (!effect.computed) {
+      triggerEffect(effect)
+    }
   }
 }
 export function triggerEffect(effect: ReactiveEffect) {
