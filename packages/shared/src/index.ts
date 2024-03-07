@@ -1,3 +1,6 @@
+
+export const EMPTY_OBJ: { readonly [key: string]: any } = {}
+
 export const isString = (val: unknown) => typeof val === 'string'
 
 /**

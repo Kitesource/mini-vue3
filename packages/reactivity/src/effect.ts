@@ -92,7 +92,7 @@ export class ReactiveEffect<T = any> {
   constructor(
     public fn: () => T,
     public scheduler: EffectScheduler | null = null
-  ) {}
+  ) { }
 
   run() {
     // 为 activeEffect 赋值
@@ -100,6 +100,8 @@ export class ReactiveEffect<T = any> {
 
     return this.fn()
   }
+
+  stop() { }
 }
 
 
