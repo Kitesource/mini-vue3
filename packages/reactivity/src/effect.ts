@@ -1,4 +1,4 @@
-import { isArray } from '@vue/shared'
+import { extend, isArray } from '@vue/shared'
 import { Dep, createDep } from './dep'
 import { ComputedRefImpl } from './computed'
 
@@ -101,13 +101,29 @@ export class ReactiveEffect<T = any> {
     return this.fn()
   }
 }
+
+
+export interface ReactiveEffectOptions {
+  lazy?: boolean
+  scheduler?: EffectScheduler
+}
+
 /**
  * effect 函数
  * @param fn 执行方法
  * @returns 以 ReactiveEffect 实例为 this 的执行函数
  */
-export function effect<T = any>(fn: () => T) {
+export function effect<T = any>(fn: () => T, options?: ReactiveEffectOptions) {
   // 生成 ReactiveEffect 实例
   const _effect = new ReactiveEffect(fn)
-  _effect.run()
+
+  // 存在 options，则合并配置对象
+  if (options) {
+    extend(_effect, options)
+  }
+
+  // 懒执行
+  if (!options || !options.lazy) {
+    _effect.run()
+  }
 }

@@ -24,3 +24,8 @@ export const isFunction = (value: unknown) => {
  */
 export const hasChanged = (value: any, oldValue: any): boolean =>
   !Object.is(value, oldValue)
+
+/**
+ * Object.assign
+ */
+export const extend = Object.assign
