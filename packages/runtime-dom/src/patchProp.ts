@@ -1,5 +1,7 @@
 import { isOn } from '@vue/shared'
 import { patchClass } from './modules/class'
+import { patchAttr } from './modules/attrs'
+import { patchDOMProp } from './modules/props'
 
 /**
  * 为 prop 进行打补丁操作
@@ -13,8 +15,10 @@ export const patchProp = (el, key, prevValue, nextValue) => {
 		// 事件
 	} else if (shouldSetAsProp(el, key)) {
 		// 通过 DOM Properties 指定
+		patchDOMProp(el, key, nextValue)
 	} else {
 		// 其他属性
+		patchAttr(el, key, nextValue)
 	}
 }
 
