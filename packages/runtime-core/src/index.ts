@@ -5,4 +5,6 @@ export {
   Fragment,
   Text,
   Comment,
+  createElementVNode,
+  createCommentVNode
 } from './vnode'

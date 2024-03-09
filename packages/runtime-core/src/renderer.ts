@@ -65,6 +65,7 @@ function baseCreateRenderer(options: RendererOptions): any {
     remove: hostRemove,
     createText: hostCreateText,
     setText: hostSetText,
+    createComment: hostCreateComment,
   } = options
 
   /**
@@ -86,7 +87,20 @@ function baseCreateRenderer(options: RendererOptions): any {
       }
     }
   }
-
+  /**
+   * Comment 的打补丁操作
+   */
+  const processCommentNode = (oldVNode, newVNode, container, anchor) => {
+    if (oldVNode == null) {
+      // 生成节点
+      newVNode.el = hostCreateComment((newVNode.children as string) || '')
+      // 挂载
+      hostInsert(newVNode.el, container, anchor)
+    } else {
+      // 无更新
+      newVNode.el = oldVNode.el
+    }
+  }
   /**
    * Element 的打补丁操作
    */
@@ -240,6 +254,7 @@ function baseCreateRenderer(options: RendererOptions): any {
         break
       case Comment:
         // Comment
+        processCommentNode(oldVNode, newVNode, container, anchor)
         break
       case Fragment:
         // Fragment
