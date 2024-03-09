@@ -2,6 +2,7 @@ import { isOn } from '@vue/shared'
 import { patchClass } from './modules/class'
 import { patchAttr } from './modules/attrs'
 import { patchDOMProp } from './modules/props'
+import { patchStyle } from './modules/style'
 
 /**
  * 为 prop 进行打补丁操作
@@ -11,6 +12,7 @@ export const patchProp = (el, key, prevValue, nextValue) => {
 		patchClass(el, nextValue)
 	} else if (key === 'style') {
 		// style
+		patchStyle(el, prevValue, nextValue)
 	} else if (isOn(key)) {
 		// 事件
 	} else if (shouldSetAsProp(el, key)) {
