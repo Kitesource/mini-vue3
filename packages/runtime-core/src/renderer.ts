@@ -393,6 +393,14 @@ function baseCreateRenderer(options: RendererOptions): any {
         }
       }
     }
+
+    // 4. 旧节点多与新节点时的 diff 比对。
+    else if (i > newChildrenEnd) {
+      while (i <= oldChildrenEnd) {
+        unmount(oldChildren[i])
+        i++
+      }
+    }
   }
 
   /**
