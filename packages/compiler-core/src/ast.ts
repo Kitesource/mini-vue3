@@ -35,3 +35,25 @@ export const enum NodeTypes {
 	JS_SEQUENCE_EXPRESSION,
 	JS_RETURN_STATEMENT
 }
+
+/**
+ * Element 标签类型
+ */
+export const enum ElementTypes {
+	/**
+	 * element，例如：<div>
+	 */
+	ELEMENT,
+	/**
+	 * 组件
+	 */
+	COMPONENT,
+	/**
+	 * 插槽
+	 */
+	SLOT,
+	/**
+	 * template
+	 */
+	TEMPLATE
+}
