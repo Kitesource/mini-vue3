@@ -2,6 +2,7 @@ import { isArray, isString } from '@vue/shared'
 import { ElementTypes, NodeTypes } from './ast'
 import { isSingleElementRoot } from './hoistStatic'
 import { TO_DISPLAY_STRING } from './runtimeHelpers'
+import { isVSlot } from './utils'
 
 /**
  * transform 上下文对象
@@ -178,3 +179,45 @@ function createRootCodegen(root) {
     }
   }
 }
+
+/**
+ * 针对于指令的处理
+ * @param name 正则。匹配具体的指令
+ * @param fn 指令的具体处理方法，通常为闭包函数
+ * @returns 返回一个闭包函数
+ */
+export function createStructuralDirectiveTransform(name: string | RegExp, fn) {
+  const matches = isString(name)
+    ? (n: string) => n === name
+    : (n: string) => (name as RegExp).test(n)
+
+  return (node, context) => {
+    if (node.type === NodeTypes.ELEMENT) {
+      const { props } = node
+      // 结构的转换与 v-slot 无关
+      if (node.tagType === ElementTypes.TEMPLATE && props.some(isVSlot)) {
+        return
+      }
+
+      // 存储转化函数的数组
+      const exitFns: any = []
+      // 遍历所有的 props
+      for (let i = 0; i < props.length; i++) {
+        const prop = props[i]
+        // 仅处理指令，并且该指令要匹配指定的正则
+        if (prop.type === NodeTypes.DIRECTIVE && matches(prop.name)) {
+          // 删除结构指令以避免无限递归
+          props.splice(i, 1)
+          i--
+          // fn 会返回具体的指令函数
+          const onExit = fn(node, prop, context)
+          // 存储到数组中
+          if (onExit) exitFns.push(onExit)
+        }
+      }
+      // 返回包含所有函数的数组
+      return exitFns
+    }
+  }
+}
+
