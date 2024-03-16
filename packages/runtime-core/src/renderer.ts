@@ -6,6 +6,7 @@ import { normalizeVNode, renderComponentRoot } from './componentRenderUtils'
 import { createComponentInstance, setupComponent } from './component'
 import { ReactiveEffect } from '@vue/reactivity'
 import { queuePreFlushCb } from './scheduler'
+import { createAppAPI } from './apiCreateApp'
 
 /**
  * 渲染器配置对象
@@ -625,6 +626,7 @@ function baseCreateRenderer(options: RendererOptions): any {
   }
   return {
     render,
+    createApp: createAppAPI(render)
   }
 }
 
