@@ -54,7 +54,8 @@ function parseChildren(context: ParserContext, ancestors) {
 		let node
 
 		if (startsWith(s, '{{')) {
-			node = {}
+			// 插值表达式
+			node = parseInterpolation(context)
 		}
 		// < 意味着一个标签的开始
 		else if (s[0] === '<') {
@@ -74,6 +75,32 @@ function parseChildren(context: ParserContext, ancestors) {
 	}
 
 	return nodes
+}
+/**
+ * 解析插值表达式 {{ xxx }}
+ */
+function parseInterpolation(context: ParserContext) {
+	// open = {{
+	// close = }}
+	const [open, close] = ['{{', '}}']
+
+	advanceBy(context, open.length)
+
+	// 获取插值表达式中间的值
+	const closeIndex = context.source.indexOf(close, open.length)
+	const preTrimContent = parseTextData(context, closeIndex)
+	const content = preTrimContent.trim()
+
+	advanceBy(context, close.length)
+
+	return {
+		type: NodeTypes.INTERPOLATION,
+		content: {
+			type: NodeTypes.SIMPLE_EXPRESSION,
+			isStatic: false,
+			content
+		}
+	}
 }
 /**
  * 解析 Element 元素。例如：<div>

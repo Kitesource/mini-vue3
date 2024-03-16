@@ -1,6 +1,7 @@
 import { isArray, isString } from '@vue/shared'
 import { NodeTypes } from './ast'
 import {
+  TO_DISPLAY_STRING,
   helperNameMap,
 } from './runtimeHelpers'
 import { getVNodeHelper } from './utils'
@@ -143,7 +144,51 @@ function genNode(node, context) {
     case NodeTypes.TEXT:
       genText(node, context)
       break
+    // 复合表达式处理
+    case NodeTypes.SIMPLE_EXPRESSION:
+      genExpression(node, context)
+      break
+    // 表达式处理
+    case NodeTypes.INTERPOLATION:
+      genInterpolation(node, context)
+      break
+    // {{}} 处理
+    case NodeTypes.COMPOUND_EXPRESSION:
+      genCompoundExpression(node, context)
+      break
   }
+}
+
+/**
+ * 复合表达式处理
+ */
+function genCompoundExpression(node, context) {
+  for (let i = 0; i < node.children!.length; i++) {
+    const child = node.children![i]
+    if (isString(child)) {
+      context.push(child)
+    } else {
+      genNode(child, context)
+    }
+  }
+}
+
+/**
+ * 表达式处理
+ */
+function genExpression(node, context) {
+  const { content, isStatic } = node
+  context.push(isStatic ? JSON.stringify(content) : content, node)
+}
+
+/**
+ * {{}} 处理
+ */
+function genInterpolation(node, context) {
+  const { push, helper } = context
+  push(`${helper(TO_DISPLAY_STRING)}(`)
+  genNode(node.content, context)
+  push(`)`)
 }
 
 /**
